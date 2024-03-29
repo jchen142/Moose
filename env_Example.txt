@@ -1,0 +1,15 @@
+# Discord Bot token https://discord.com/developers/applications
+DISCORD_BOT_TOKEN=
+
+LOGGING=True
+REPLYING_ALL=False
+
+# channel using to send the starting-prompt
+DISCORD_CHANNEL_ID=
+REPLYING_ALL_DISCORD_CHANNEL_ID=
+
+# Generating images cookies (Neccessary for bing & openai)
+GOOGLE_PSID=	# https://gemini.google.com/app -> __Secure-1PSID
+
+# Default Model
+MODEL=gpt-3.5-turbo
