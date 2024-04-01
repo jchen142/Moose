@@ -66,8 +66,10 @@ def run_discord_bot():
     @discordClient.tree.command(name="join", description="Joins current voice channel")
     async def join(interaction: discord.Interaction):
         voice_channel = interaction.user.voice.channel
+        await interaction.response.defer(ephemeral=True)
         if voice_channel:
             await voice_channel.connect()
+            await interaction.followup.send("I have joined the voice channel.")
         else:
             await interaction.followup.send("You are not in a voice channel.")
 
@@ -75,6 +77,7 @@ def run_discord_bot():
     async def stream(interaction: discord.Interaction, url: str):
         """Streams a video from Youtube without predownloading"""
         voice_client = interaction.guild.voice_client
+        await interaction.response.defer(ephemeral=True)
         if voice_client:
             player = await YTDLSource.from_url(url, stream=True)
             voice_client.play(player, after=lambda e: print(f"Player error: {e}") if e else None)
@@ -82,12 +85,47 @@ def run_discord_bot():
         else:
             await interaction.followup.send("I am not connected to a voice channel.")
 
-    @discordClient.tree.command(name="stop", description="Bot stops playing music and leaves")
+    @discordClient.tree.command(name="pause", description="Pause the current song")
+    async def pause(interaction: discord.Interaction):
+        """Pauses the bot's music"""
+        voice_client = interaction.guild.voice_client
+        await interaction.response.defer(ephemeral=True)
+        if voice_client and voice_client.is_playing():
+            voice_client.pause()
+            await interaction.followup.send("Music paused.")
+        else:
+            await interaction.followup.send("Not currently playing any music.")
+
+    @discordClient.tree.command(name="resume", description="Resumes the paused song")
+    async def resume(interaction: discord.Interaction):
+        """Resumes the bot's paused music"""
+        voice_client = interaction.guild.voice_client
+        await interaction.response.defer(ephemeral=True)
+        if voice_client and not voice_client.is_paused():
+            voice_client.resume()
+            await interaction.followup.send("Music resumed.")
+        else:
+            await interaction.followup.send("Music is currently not paused.")
+
+    @discordClient.tree.command(name="stop", description="Bot stops playing music")
     async def stop(interaction: discord.Interaction):
         """Stops the bot's music and disconnects"""
         voice_client = interaction.guild.voice_client
+        await interaction.response.defer(ephemeral=True)
+        if voice_client and voice_client.is_playing():
+            voice_client.stop()
+            await interaction.followup.send("Music stopped.")
+        else:
+            await interaction.followup.send("No music is currently playing.")
+
+    @discordClient.tree.command(name="leave", description="Bot leaves the voice channel")
+    async def leave(interaction: discord.Interaction):
+        """Disconnects the bot from the voice channel"""
+        voice_client = interaction.guild.voice_client
+        await interaction.response.defer(ephemeral=True)
         if voice_client:
             await voice_client.disconnect()
+            await interaction.followup.send("Moose has left the channel.")
         else:
             await interaction.followup.send("I am not connected to a voice channel.")
 
